@@ -15,9 +15,9 @@ const invalid = questions.filter((q) =>
   ![2, 4].includes(q.format) || q.options.length !== q.format ||
   q.answer < 0 || q.answer >= q.options.length || !q.explanation || 'source' in q
 );
-const html = fs.readFileSync(path.join(root, 'docs', 'index.html'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const missingAssets = [...html.matchAll(/(?:href|src)="([^"#]+)"/g)]
-  .map((m) => m[1]).filter((file) => !fs.existsSync(path.join(root, 'docs', file)));
+  .map((m) => m[1]).filter((file) => !fs.existsSync(path.join(root, file)));
 if (invalid.length || ids.size !== questions.length || missingAssets.length) {
   throw new Error(JSON.stringify({ invalid: invalid.length, uniqueIds: ids.size, total: questions.length, missingAssets }));
 }

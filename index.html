@@ -10,13 +10,16 @@
 </head>
 <body>
   <header class="site-header"><div class="header-inner">
-    <a class="brand" href="index.html" aria-label="きんざい学習室 トップ"><span class="brand-mark">K</span><span><strong>きんざい学習室</strong><small>一問ずつ、着実に。</small></span></a>
+    <a class="brand" href="index.html" aria-label="きんざい学習室 トップ"><img class="brand-icon" src="docs/assets/finance-icon.png" alt=""><span><strong>きんざい学習室</strong><small>一問ずつ、着実に。</small></span></a>
     <a class="header-cta" href="quiz.html">問題を解く</a>
   </div></header>
   <main class="page-shell dashboard">
-    <section class="dashboard-hero"><div><p class="dashboard-kicker">LEARNING RECORD</p><h1>学習履歴</h1><p>これまでに解いた問題と、現在の理解度を確認できます。</p></div><a class="primary-button dashboard-start" href="quiz.html">問題を解く</a></section>
-    <section id="subject-overview" class="subject-overview" aria-label="科目別の学習状況"></section>
-    <section class="history-section" aria-labelledby="history-title">
+    <nav class="dashboard-tabs" aria-label="履歴表示の切り替え">
+      <button id="learning-tab" class="dashboard-tab active" type="button" aria-selected="true" aria-controls="learning-panel">学習記録</button>
+      <button id="answered-tab" class="dashboard-tab" type="button" aria-selected="false" aria-controls="answered-panel">解答済み履歴</button>
+    </nav>
+    <section id="learning-panel" class="dashboard-panel" aria-labelledby="learning-tab"><div id="subject-overview" class="subject-overview" aria-label="科目別の学習状況"></div></section>
+    <section id="answered-panel" class="history-section dashboard-panel" aria-labelledby="history-title" hidden>
       <div class="section-heading"><div><p class="dashboard-kicker">RECENT ACTIVITY</p><h2 id="history-title">解答した問題</h2></div><button id="open-filter" class="filter-button" type="button" aria-haspopup="dialog"><span class="filter-icon" aria-hidden="true"><i></i><i></i><i></i></span>絞り込み<span id="filter-badge" class="filter-badge" hidden></span></button></div>
       <div id="history-list" class="history-list"></div>
       <div id="history-empty" class="history-empty" hidden><span>○</span><h3>まだ回答履歴がありません</h3><p>問題に回答すると、ここに学習履歴が表示されます。</p><a class="primary-button" href="quiz.html">最初の問題を解く</a></div>
@@ -26,7 +29,7 @@
     <form id="filter-form" method="dialog">
       <div class="dialog-heading"><div><p class="dashboard-kicker">FILTER</p><h2 id="filter-title">履歴を絞り込む</h2></div><button id="close-filter" class="dialog-close" type="button" aria-label="閉じる">×</button></div>
       <label class="dialog-field">科目<select id="history-subject"><option value="all">すべて</option><option value="財務">財務</option><option value="税務">税務</option><option value="法務">法務</option></select></label>
-      <label class="dialog-field">正誤状態<select id="history-result"><option value="all">すべて</option><option value="ever-wrong">一度でも不正解</option><option value="still-wrong">現在も不正解</option></select></label>
+      <label class="dialog-field">状態<select id="history-result"><option value="all">すべて</option><option value="ever-wrong">一度でも不正解</option><option value="still-wrong">現在も不正解</option><option value="check-later">あとで確認</option></select></label>
       <button class="primary-button dialog-apply" type="submit">この条件で表示</button>
     </form>
   </dialog>

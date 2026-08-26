@@ -12,7 +12,7 @@
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="index.html" aria-label="トップページに戻る">
-        <span class="brand-mark">K</span>
+        <img class="brand-icon" src="docs/assets/finance-icon.png" alt="">
         <span><strong>きんざい学習室</strong><small>一問ずつ、着実に。</small></span>
       </a>
       <nav class="subjects" aria-label="科目を選択">
@@ -26,9 +26,9 @@
   <main class="page-shell">
     <section class="study-header" aria-label="学習状況">
       <div class="summary" aria-label="学習状況">
-        <div><strong id="answered-count">0</strong><span>回答済み</span></div>
+        <a class="summary-stat" href="index.html?tab=answered&amp;result=check-later" aria-label="あとで確認に登録した解答済み問題を表示"><strong id="answered-count">0</strong><span>あとで確認</span></a>
         <div><strong id="accuracy">—</strong><span>正答率</span></div>
-        <div><strong id="wrong-count">0</strong><span>復習待ち</span></div>
+        <a class="summary-stat summary-stat-last" href="index.html?tab=answered&amp;result=still-wrong" aria-label="現在も不正解の問題をすべて表示"><strong id="wrong-count">0</strong><span>復習待ち</span></a>
       </div>
     </section>
 
@@ -36,13 +36,13 @@
       <fieldset>
         <legend class="visually-hidden">出題形式</legend>
         <div class="segmented">
-          <button class="format" data-format="all" aria-pressed="false">すべて</button>
-          <button class="format active" data-format="2" aria-pressed="true">2択</button>
+          <button class="format active" data-format="all" aria-pressed="true">すべて</button>
+          <button class="format" data-format="2" aria-pressed="false">2択</button>
           <button class="format" data-format="4" aria-pressed="false">4択</button>
         </div>
         <select id="format-select" class="format-select" aria-label="出題形式を選択">
-          <option value="all">すべて</option>
-          <option value="2" selected>2択</option>
+          <option value="all" selected>すべて</option>
+          <option value="2">2択</option>
           <option value="4">4択</option>
         </select>
       </fieldset>
@@ -59,7 +59,7 @@
       </div>
       <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
       <div class="question-wrap">
-        <p id="question-number" class="question-number">QUESTION 01</p>
+        <div class="question-heading-row"><p id="question-number" class="question-number">QUESTION 01</p><button id="check-later" class="check-later" type="button" aria-pressed="false">あとで確認</button></div>
         <h2 id="question-text"></h2>
         <div id="choices" class="choices" role="group" aria-label="選択肢"></div>
       </div>
@@ -72,6 +72,7 @@
         <div class="footer-left">
           <button id="previous-button" class="secondary-button">前の問題へ</button>
           <button id="copy-question" class="copy-button" type="button" hidden>この問題をコピー</button>
+          <button id="open-chatgpt" class="chatgpt-button" type="button" hidden>コピーしてChatGPTへ移動</button>
           <button id="shuffle-button" class="text-button">↻ 順番をシャッフル</button>
         </div>
         <button id="next-button" class="primary-button" hidden>次の問題へ</button>

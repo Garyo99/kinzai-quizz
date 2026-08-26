@@ -1,8 +1,10 @@
 (() => {
   'use strict';
   const STORAGE_KEY = 'kinzai-study-history-v1';
+  const CHECK_LATER_KEY = 'kinzai-check-later-v1';
   const subjects = ['財務', '税務', '法務'];
   const history = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } })();
+  const checkLater = (() => { try { return new Set(JSON.parse(localStorage.getItem(CHECK_LATER_KEY)) || []); } catch { return new Set(); } })();
   const questions = new Map(window.QUESTIONS.map(q => [q.id, q]));
   const records = Object.entries(history).map(([id, record]) => ({ record, question: questions.get(id) })).filter(item => item.question);
   const overview = document.getElementById('subject-overview');
@@ -10,7 +12,7 @@
     const items = records.filter(item => item.question.subject === subject);
     const correct = items.filter(item => item.record.lastCorrect).length;
     const card = document.createElement('article'); card.className = 'overview-card';
-    card.innerHTML = `<div class="overview-title"><span>${subject[0]}</span><h2>${subject}</h2></div><div class="overview-metrics"><p><strong>${items.length}</strong><small>回答済み</small></p><p><strong>${items.length ? `${Math.round(correct / items.length * 100)}%` : '—'}</strong><small>正答率</small></p><p><strong>${items.filter(item => !item.record.lastCorrect).length}</strong><small>復習待ち</small></p></div><a href="quiz.html?subject=${encodeURIComponent(subject)}">${subject}を練習する</a>`;
+    card.innerHTML = `<div class="overview-title"><span>${subject[0]}</span><h2>${subject}</h2></div><div class="overview-metrics"><p><strong>${items.length}</strong><small>回答済み</small></p><p><strong>${items.length ? `${Math.round(correct / items.length * 100)}%` : '—'}</strong><small>正答率</small></p><a class="overview-review" href="index.html?tab=answered&amp;subject=${encodeURIComponent(subject)}&amp;result=still-wrong" aria-label="${subject}の現在も不正解の問題を表示"><strong>${items.filter(item => !item.record.lastCorrect).length}</strong><small>復習待ち</small></a></div><a href="quiz.html?subject=${encodeURIComponent(subject)}">${subject}を練習する</a>`;
     overview.append(card);
   });
   function formatDate(value) { return value ? new Intl.DateTimeFormat('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value)).replace(/\s/g, ' ') : '日時不明'; }
@@ -21,7 +23,11 @@
     if (attempts) results.push(lastCorrect);
     return results.map((correct, index) => ({ correct, answeredAt: index === attempts - 1 ? record.lastAnsweredAt : null }));
   }
-  const filters = { subject: 'all', result: 'all' };
+  const initialParams = new URLSearchParams(location.search);
+  const initialTab = initialParams.get('tab') === 'answered' ? 'answered' : 'learning';
+  const initialSubject = subjects.includes(initialParams.get('subject')) ? initialParams.get('subject') : 'all';
+  const initialResult = ['ever-wrong', 'still-wrong', 'check-later'].includes(initialParams.get('result')) ? initialParams.get('result') : 'all';
+  const filters = { subject: initialSubject, result: initialResult };
   function render() {
     const list = document.getElementById('history-list'); const empty = document.getElementById('history-empty');
     const visible = records.filter(item => {
@@ -29,6 +35,7 @@
       const attempts = attemptsFor(item.record);
       if (filters.result === 'ever-wrong' && !attempts.some(attempt => !attempt.correct)) return false;
       if (filters.result === 'still-wrong' && attempts.at(-1)?.correct !== false) return false;
+      if (filters.result === 'check-later' && !checkLater.has(item.question.id)) return false;
       return true;
     }).flatMap(item => attemptsFor(item.record).map((attempt, index) => ({ question: item.question, attempt, attemptNumber: index + 1 }))).sort((a, b) => new Date(b.attempt.answeredAt || 0) - new Date(a.attempt.answeredAt || 0));
     list.replaceChildren(); empty.hidden = visible.length > 0;
@@ -43,6 +50,12 @@
     });
   }
   const dialog = document.getElementById('filter-dialog');
+  document.getElementById('history-subject').value = filters.subject;
+  document.getElementById('history-result').value = filters.result;
+  if (filters.subject !== 'all' || filters.result !== 'all') {
+    document.getElementById('filter-badge').hidden = false;
+    document.getElementById('open-filter').classList.add('active');
+  }
   document.getElementById('open-filter').addEventListener('click', () => dialog.showModal());
   document.getElementById('close-filter').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
@@ -54,5 +67,17 @@
     document.getElementById('open-filter').classList.toggle('active', active);
     render();
   });
+  function setTab(tab) {
+    const answered = tab === 'answered';
+    document.getElementById('learning-panel').hidden = answered;
+    document.getElementById('answered-panel').hidden = !answered;
+    document.getElementById('learning-tab').classList.toggle('active', !answered);
+    document.getElementById('answered-tab').classList.toggle('active', answered);
+    document.getElementById('learning-tab').setAttribute('aria-selected', !answered);
+    document.getElementById('answered-tab').setAttribute('aria-selected', answered);
+  }
+  document.getElementById('learning-tab').addEventListener('click', () => setTab('learning'));
+  document.getElementById('answered-tab').addEventListener('click', () => setTab('answered'));
+  setTab(initialTab);
   render();
 })();

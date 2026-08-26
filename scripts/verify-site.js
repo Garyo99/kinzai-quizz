@@ -17,7 +17,7 @@ const invalid = questions.filter((q) =>
 );
 const missingAssets = ['index.html', 'quiz.html'].flatMap(page => {
   const html = fs.readFileSync(path.join(root, page), 'utf8');
-  return [...html.matchAll(/(?:href|src)="([^"#?]+)(?:\?[^"#]*)?"/g)].map(m => m[1]).filter(file => !fs.existsSync(path.join(root, file))).map(file => `${page}: ${file}`);
+  return [...html.matchAll(/(?:href|src)="([^"#?]+)(?:\?[^"#]*)?"/g)].map(m => m[1]).filter(file => !/^(?:https?:)?\/\//.test(file)).filter(file => !fs.existsSync(path.join(root, file))).map(file => `${page}: ${file}`);
 });
 if (invalid.length || ids.size !== questions.length || missingAssets.length) {
   throw new Error(JSON.stringify({ invalid: invalid.length, uniqueIds: ids.size, total: questions.length, missingAssets }));

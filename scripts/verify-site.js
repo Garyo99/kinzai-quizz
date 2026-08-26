@@ -3,7 +3,7 @@ const vm = require('vm');
 const path = require('path');
 const root = path.resolve(__dirname, '..');
 
-for (const file of ['app.js', 'history.js', 'questions.js']) {
+for (const file of ['app.js', 'auth.js', 'history.js', 'questions.js']) {
   new vm.Script(fs.readFileSync(path.join(root, 'docs', file), 'utf8'), { filename: file });
 }
 const context = { window: {} };

@@ -15,6 +15,19 @@
     card.innerHTML = `<div class="overview-title"><span>${subject[0]}</span><h2>${subject}</h2></div><div class="overview-metrics"><p><strong>${items.length}</strong><small>回答済み</small></p><p><strong>${items.length ? `${Math.round(correct / items.length * 100)}%` : '—'}</strong><small>正答率</small></p><a class="overview-review" href="index.html?tab=answered&amp;subject=${encodeURIComponent(subject)}&amp;result=still-wrong" aria-label="${subject}の現在も不正解の問題を表示"><strong>${items.filter(item => !item.record.lastCorrect).length}</strong><small>復習待ち</small></a></div><a href="quiz.html?subject=${encodeURIComponent(subject)}">${subject}を練習する</a>`;
     overview.append(card);
   });
+  const laterQuestions = window.QUESTIONS.filter(question => checkLater.has(question.id));
+  document.getElementById('later-count').textContent = laterQuestions.length;
+  const laterList = document.getElementById('later-list');
+  document.getElementById('later-empty').hidden = laterQuestions.length > 0;
+  laterQuestions.forEach(question => {
+    const answered = Boolean(history[question.id]);
+    const link = document.createElement('a'); link.className = 'later-item'; link.href = `quiz.html?question=${encodeURIComponent(question.id)}`;
+    const meta = document.createElement('p'); meta.textContent = `${question.subject}・${question.sourceType}・${question.format}択`;
+    const title = document.createElement('h3'); title.textContent = question.question;
+    const status = document.createElement('span'); status.className = answered ? 'later-status answered' : 'later-status'; status.textContent = answered ? '回答済み' : '未回答';
+    const content = document.createElement('div'); content.append(meta, title);
+    link.append(status, content); laterList.append(link);
+  });
   function formatDate(value) { return value ? new Intl.DateTimeFormat('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value)).replace(/\s/g, ' ') : '日時不明'; }
   function attemptsFor(record) {
     if (Array.isArray(record.answers)) return record.answers;
@@ -26,7 +39,7 @@
   const initialParams = new URLSearchParams(location.search);
   const initialTab = initialParams.get('tab') === 'answered' ? 'answered' : 'learning';
   const initialSubject = subjects.includes(initialParams.get('subject')) ? initialParams.get('subject') : 'all';
-  const initialResult = ['ever-wrong', 'still-wrong', 'check-later'].includes(initialParams.get('result')) ? initialParams.get('result') : 'all';
+  const initialResult = ['ever-wrong', 'still-wrong'].includes(initialParams.get('result')) ? initialParams.get('result') : 'all';
   const filters = { subject: initialSubject, result: initialResult };
   function render() {
     const list = document.getElementById('history-list'); const empty = document.getElementById('history-empty');
@@ -35,7 +48,6 @@
       const attempts = attemptsFor(item.record);
       if (filters.result === 'ever-wrong' && !attempts.some(attempt => !attempt.correct)) return false;
       if (filters.result === 'still-wrong' && attempts.at(-1)?.correct !== false) return false;
-      if (filters.result === 'check-later' && !checkLater.has(item.question.id)) return false;
       return true;
     }).flatMap(item => attemptsFor(item.record).map((attempt, index) => ({ question: item.question, attempt, attemptNumber: index + 1 }))).sort((a, b) => new Date(b.attempt.answeredAt || 0) - new Date(a.attempt.answeredAt || 0));
     list.replaceChildren(); empty.hidden = visible.length > 0;
@@ -80,4 +92,9 @@
   document.getElementById('answered-tab').addEventListener('click', () => setTab('answered'));
   setTab(initialTab);
   render();
+  if (initialParams.get('later') === 'open') {
+    const laterSection = document.querySelector('.later-section');
+    laterSection.open = true;
+    requestAnimationFrame(() => laterSection.scrollIntoView({ block: 'start' }));
+  }
 })();

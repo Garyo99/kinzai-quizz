@@ -4,88 +4,32 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#17352d">
-  <meta name="description" content="財務・税務・法務を一問一答で学べる問題演習サイト">
-  <title>きんざい学習室</title>
+  <meta name="description" content="財務・税務・法務の学習状況と回答履歴">
+  <title>きんざい学習室｜学習履歴</title>
   <link rel="stylesheet" href="docs/styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="./" aria-label="きんざい学習室 トップ">
-        <span class="brand-mark">K</span>
-        <span><strong>きんざい学習室</strong><small>一問ずつ、着実に。</small></span>
-      </a>
-      <nav class="subjects" aria-label="科目を選択">
-        <button class="subject active" data-subject="財務">財務</button>
-        <button class="subject" data-subject="税務">税務</button>
-        <button class="subject" data-subject="法務">法務</button>
-      </nav>
-    </div>
-  </header>
-
-  <main class="page-shell">
-    <section class="study-header" aria-labelledby="page-title">
-      <div>
-        <p class="eyebrow">DAILY PRACTICE</p>
-        <h1 id="page-title"><span id="subject-title">財務</span>を練習する</h1>
-        <p class="lead">答えを選ぶと、その場で正答と解説を確認できます。</p>
-      </div>
-      <div class="summary" aria-label="学習状況">
-        <div><strong id="answered-count">0</strong><span>回答済み</span></div>
-        <div><strong id="accuracy">—</strong><span>正答率</span></div>
-        <div><strong id="wrong-count">0</strong><span>復習待ち</span></div>
-      </div>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="index.html" aria-label="きんざい学習室 トップ"><span class="brand-mark">K</span><span><strong>きんざい学習室</strong><small>一問ずつ、着実に。</small></span></a>
+    <a class="header-cta" href="quiz.html">問題を解く</a>
+  </div></header>
+  <main class="page-shell dashboard">
+    <section class="dashboard-hero"><div><p class="dashboard-kicker">LEARNING RECORD</p><h1>学習履歴</h1><p>これまでに解いた問題と、現在の理解度を確認できます。</p></div><a class="primary-button dashboard-start" href="quiz.html">問題を解く</a></section>
+    <section id="subject-overview" class="subject-overview" aria-label="科目別の学習状況"></section>
+    <section class="history-section" aria-labelledby="history-title">
+      <div class="section-heading"><div><p class="dashboard-kicker">RECENT ACTIVITY</p><h2 id="history-title">解答した問題</h2></div><button id="open-filter" class="filter-button" type="button" aria-haspopup="dialog"><span class="filter-icon" aria-hidden="true"><i></i><i></i><i></i></span>絞り込み<span id="filter-badge" class="filter-badge" hidden></span></button></div>
+      <div id="history-list" class="history-list"></div>
+      <div id="history-empty" class="history-empty" hidden><span>○</span><h3>まだ回答履歴がありません</h3><p>問題に回答すると、ここに学習履歴が表示されます。</p><a class="primary-button" href="quiz.html">最初の問題を解く</a></div>
     </section>
-
-    <section class="toolbar" aria-label="出題設定">
-      <fieldset>
-        <legend>出題形式</legend>
-        <div class="segmented">
-          <button class="format active" data-format="2" aria-pressed="true">2択</button>
-          <button class="format" data-format="4" aria-pressed="false">4択</button>
-        </div>
-      </fieldset>
-      <div class="mode-actions">
-        <button id="normal-mode" class="mode active" aria-pressed="true"><span>すべて</span><small id="all-total">0問</small></button>
-        <button id="review-mode" class="mode" aria-pressed="false"><span>間違いだけ</span><small id="review-total">0問</small></button>
-      </div>
-    </section>
-
-    <section id="quiz" class="quiz-card" aria-live="polite">
-      <div class="quiz-topline">
-        <div class="tags"><span id="type-tag" class="tag">○×問題</span><span id="format-tag" class="tag subtle">2択</span></div>
-        <span id="progress-text">1 / 1</span>
-      </div>
-      <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
-      <div class="question-wrap">
-        <p id="question-number" class="question-number">QUESTION 01</p>
-        <h2 id="question-text"></h2>
-        <div id="choices" class="choices" role="group" aria-label="選択肢"></div>
-      </div>
-      <div id="feedback" class="feedback" hidden>
-        <p id="result-label" class="result-label"></p>
-        <p id="correct-answer" class="correct-answer"></p>
-        <div class="explanation"><span>解説</span><p id="explanation-text"></p></div>
-      </div>
-      <div class="quiz-footer">
-        <button id="shuffle-button" class="text-button">↻ 順番をシャッフル</button>
-        <button id="next-button" class="primary-button" hidden>次の問題へ <span>→</span></button>
-      </div>
-    </section>
-
-    <section id="empty-state" class="empty-state" hidden>
-      <span class="empty-icon">✓</span>
-      <h2>該当する問題はありません</h2>
-      <p id="empty-message"></p>
-      <button id="back-all" class="primary-button">すべての問題に戻る</button>
-    </section>
-
-    <footer class="page-footer">
-      <p>回答履歴はこの端末のブラウザ内だけに保存されます。</p>
-      <button id="reset-history" class="text-button danger">学習履歴をリセット</button>
-    </footer>
   </main>
-  <script src="docs/questions.js"></script>
-  <script src="docs/app.js"></script>
+  <dialog id="filter-dialog" class="filter-dialog" aria-labelledby="filter-title">
+    <form id="filter-form" method="dialog">
+      <div class="dialog-heading"><div><p class="dashboard-kicker">FILTER</p><h2 id="filter-title">履歴を絞り込む</h2></div><button id="close-filter" class="dialog-close" type="button" aria-label="閉じる">×</button></div>
+      <label class="dialog-field">科目<select id="history-subject"><option value="all">すべて</option><option value="財務">財務</option><option value="税務">税務</option><option value="法務">法務</option></select></label>
+      <label class="dialog-field">正誤状態<select id="history-result"><option value="all">すべて</option><option value="ever-wrong">一度でも不正解</option><option value="still-wrong">現在も不正解</option></select></label>
+      <button class="primary-button dialog-apply" type="submit">この条件で表示</button>
+    </form>
+  </dialog>
+  <script src="docs/questions.js"></script><script src="docs/history.js"></script>
 </body>
 </html>

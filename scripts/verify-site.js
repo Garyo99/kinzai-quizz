@@ -3,7 +3,7 @@ const vm = require('vm');
 const path = require('path');
 const root = path.resolve(__dirname, '..');
 
-for (const file of ['app.js', 'questions.js']) {
+for (const file of ['app.js', 'history.js', 'questions.js']) {
   new vm.Script(fs.readFileSync(path.join(root, 'docs', file), 'utf8'), { filename: file });
 }
 const context = { window: {} };
@@ -15,9 +15,10 @@ const invalid = questions.filter((q) =>
   ![2, 4].includes(q.format) || q.options.length !== q.format ||
   q.answer < 0 || q.answer >= q.options.length || !q.explanation || 'source' in q
 );
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const missingAssets = [...html.matchAll(/(?:href|src)="([^"#]+)"/g)]
-  .map((m) => m[1]).filter((file) => !fs.existsSync(path.join(root, file)));
+const missingAssets = ['index.html', 'quiz.html'].flatMap(page => {
+  const html = fs.readFileSync(path.join(root, page), 'utf8');
+  return [...html.matchAll(/(?:href|src)="([^"#?]+)(?:\?[^"#]*)?"/g)].map(m => m[1]).filter(file => !fs.existsSync(path.join(root, file))).map(file => `${page}: ${file}`);
+});
 if (invalid.length || ids.size !== questions.length || missingAssets.length) {
   throw new Error(JSON.stringify({ invalid: invalid.length, uniqueIds: ids.size, total: questions.length, missingAssets }));
 }

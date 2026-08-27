@@ -300,7 +300,7 @@
     const choices = q.options
       .map((option, index) => `${index + 1}. ${option}`)
       .join("\n");
-    return `以下は、金融実務における「${q.subject}」の知識を問う問題です。提示した正解を前提に、正解となる理由を簡潔かつ正確に解説してください。各選択肢の正誤の根拠も示し、問題文に年や条件の指定がある場合はそれを優先してください。\n\n【問題文】\n${q.question}\n\n【選択肢】\n${choices}\n\n【正解】\n${q.answer + 1}. ${q.options[q.answer]}`;
+    return `以下は、金融実務における「${q.subject}」の知識を問う問題です。提示した正解を前提に、正解となる理由を正確に解説してください。その際に単語などの解説も行うこと。各選択肢の正誤の根拠も示し、問題文に年や条件の指定がある場合はそれを優先してください。\n\n【問題文】\n${q.question}\n\n【選択肢】\n${choices}\n\n【正解】\n${q.answer + 1}. ${q.options[q.answer]}`;
   }
   async function copyPrompt() {
     const prompt = questionPrompt();
